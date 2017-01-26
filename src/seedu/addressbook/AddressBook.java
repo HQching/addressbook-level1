@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Scanner;
@@ -114,6 +115,10 @@ public class AddressBook {
     private static final String COMMAND_LIST_WORD = "list";
     private static final String COMMAND_LIST_DESC = "Displays all persons as a list with index numbers.";
     private static final String COMMAND_LIST_EXAMPLE = COMMAND_LIST_WORD;
+
+    private static final String COMMAND_SORT_WORD = "sort";
+    private static final String COMMAND_SORT_DESC = "Displays all persons as a list with index numbers in alphabetical order.";
+    private static final String COMMAND_SORT_EXAMPLE = COMMAND_SORT_WORD;
 
     private static final String COMMAND_DELETE_WORD = "delete";
     private static final String COMMAND_DELETE_DESC = "Deletes a person identified by the index number used in "
@@ -378,6 +383,8 @@ public class AddressBook {
             return executeFindPersons(commandArgs);
         case COMMAND_LIST_WORD:
             return executeListAllPersonsInAddressBook();
+        case COMMAND_SORT_WORD:
+            return executeSortAllPersonsInAddressBook();
         case COMMAND_DELETE_WORD:
             return executeDeletePerson(commandArgs);
         case COMMAND_CLEAR_WORD:
@@ -502,14 +509,13 @@ public class AddressBook {
         final ArrayList<String[]> matchedPersons = new ArrayList<>();
         for (String[] person : getAllPersonsInAddressBook()) {
             final Set<String> wordsInName = new HashSet<>(splitByWhitespace(getNameFromPerson(person)));
-            findMatchCaseInsensitive(keywords, matchedPersons, person, wordsInName);
+            findCaseInsensitiveMatch(keywords, matchedPersons, person, wordsInName);
 
-      
         }
         return matchedPersons;
     }
 
-    private static void findMatchCaseInsensitive(Collection<String> keywords, final ArrayList<String[]> matchedPersons,
+    private static void findCaseInsensitiveMatch(Collection<String> keywords, final ArrayList<String[]> matchedPersons,
             String[] person, final Set<String> wordsInName) {
         boolean hasMatch = false;
         for (String w : wordsInName) {
@@ -614,6 +620,26 @@ public class AddressBook {
      */
     private static String executeListAllPersonsInAddressBook() {
         ArrayList<String[]> toBeDisplayed = getAllPersonsInAddressBook();
+        showToUser(toBeDisplayed);
+        return getMessageForPersonsDisplayedSummary(toBeDisplayed);
+    }
+
+    /**
+     * Displays all persons in the address book to the user; in alphabetical
+     * order.
+     *
+     * @return feedback display message for the operation result
+     */
+
+    private static String executeSortAllPersonsInAddressBook() {
+        ArrayList<String[]> toBeDisplayed = getAllPersonsInAddressBook();
+        class StringArrayComparator implements Comparator<String[]> {
+            public int compare(String[] string1, String[] string2) {
+                return string1[0].compareTo(string2[0]);
+            }
+        }
+        StringArrayComparator nameComp = new StringArrayComparator();
+        Collections.sort(toBeDisplayed, nameComp);
         showToUser(toBeDisplayed);
         return getMessageForPersonsDisplayedSummary(toBeDisplayed);
     }
@@ -1120,8 +1146,8 @@ public class AddressBook {
 
     /** Returns usage info for all commands */
     private static String getUsageInfoForAllCommands() {
-        return getUsageInfoForAddCommand() + LS + getUsageInfoForFindCommand() + LS + getUsageInfoForViewCommand() + LS
-                + getUsageInfoForDeleteCommand() + LS + getUsageInfoForClearCommand() + LS
+        return getUsageInfoForAddCommand() + LS + getUsageInfoForFindCommand() + LS + getUsageInfoForListCommand() + LS
+                + getUsageInfoForSortedListCommand() + LS + getUsageInfoForDeleteCommand() + LS + getUsageInfoForClearCommand() + LS
                 + getUsageInfoForExitCommand() + LS + getUsageInfoForHelpCommand();
     }
 
@@ -1152,10 +1178,16 @@ public class AddressBook {
                 + String.format(MESSAGE_COMMAND_HELP_EXAMPLE, COMMAND_CLEAR_EXAMPLE) + LS;
     }
 
-    /** Returns the string for showing 'view' command usage instruction */
-    private static String getUsageInfoForViewCommand() {
+    /** Returns the string for showing 'list' command usage instruction */
+    private static String getUsageInfoForListCommand() {
         return String.format(MESSAGE_COMMAND_HELP, COMMAND_LIST_WORD, COMMAND_LIST_DESC) + LS
                 + String.format(MESSAGE_COMMAND_HELP_EXAMPLE, COMMAND_LIST_EXAMPLE) + LS;
+    }
+    
+    /** Returns the string for showing 'sort' command usage instruction */
+    private static String getUsageInfoForSortedListCommand() {
+        return String.format(MESSAGE_COMMAND_HELP, COMMAND_SORT_WORD, COMMAND_SORT_DESC) + LS
+                + String.format(MESSAGE_COMMAND_HELP_EXAMPLE, COMMAND_SORT_EXAMPLE) + LS;
     }
 
     /** Returns string for showing 'help' command usage instruction */
