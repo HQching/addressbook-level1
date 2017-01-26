@@ -635,7 +635,7 @@ public class AddressBook {
         ArrayList<String[]> toBeDisplayed = getAllPersonsInAddressBook();
         class StringArrayComparator implements Comparator<String[]> {
             public int compare(String[] string1, String[] string2) {
-                return string1[0].compareTo(string2[0]);
+                return string1[0].toLowerCase().compareTo(string2[0].toLowerCase());
             }
         }
         StringArrayComparator nameComp = new StringArrayComparator();
