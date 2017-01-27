@@ -79,11 +79,17 @@ oldest first.
 
 Format: `list`  
 
+#### Listing all persons in alphabetical order: `sort`
+
+> Shows a list of persons, as an indexed list, in increasing alphabetical order.
+
+Format: `sort`  
+
 #### Finding a person by keyword `find`
 > Finds persons that match given keywords
 
 Format: `find KEYWORD [MORE_KEYWORDS]`  
-> The search is case sensitive, the order of the keywords does not matter, only the name is searched, 
+> The search is case insensitive, the order of the keywords does not matter, only the name is searched, 
 and persons matching at least one keyword will be returned (i.e. `OR` search).
 
 Examples: 
